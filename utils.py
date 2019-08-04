@@ -2,13 +2,14 @@ import numpy as np
 import glob
 import re
 import scipy.misc
+import skimage.io
 from keras.applications.vgg16 import VGG16
 from keras.layers import  Input
 from keras.models import  Model
 
 
-ldct_filepath = ""
-ndct_filepath = ""
+ldct_filepath = r"D:\deeplearning_cai\Imaegdenoising\WGAN_LDCT\data\ldct"
+ndct_filepath = r"D:\deeplearning_cai\Imaegdenoising\WGAN_LDCT\data\ndct"
 
 def tryint(s):
     try:
@@ -23,8 +24,15 @@ def alphanum_key(s):
 def load_data():
     ldct_fileList = sorted(glob.glob(ldct_filepath+"/*.jpg"),key = alphanum_key)
     ndct_fileList = sorted(glob.glob(ndct_filepath+'/*.jpg'),key = alphanum_key)
-    ldct_batch = np.array([np.array(scipy.misc.imread(fname,mode="RGB").astype('float32')) for fname in ldct_fileList])
-    ndct_batch = np.array([np.array(scipy.misc.imread(fname,mode="RGB").astype('float32')) for fname in ndct_fileList])
+    ldct_batch = np.array([np.array(skimage.io.imread(fname).astype('float32')) for fname in ldct_fileList])
+    # ldct_batch = np.array([np.array(scipy.misc.imread(fname,mode="RGB").astype('float32')) for fname in ldct_fileList])
+    ndct_batch = np.array([np.array(skimage.io.imread(fname).astype('float32')) for fname in ndct_fileList])
+
+    if ldct_batch.ndim != 3:
+        ldct_batch = skimage.color.gray2rgb(ldct_batch)
+        ndct_batch = skimage.color.gray2rgb(ndct_batch)
+
+    # ndct_batch = np.array([np.array(scipy.misc.imread(fname,mode="RGB").astype('float32')) for fname in ndct_fileList])
 
     return ldct_batch,ndct_batch
 
